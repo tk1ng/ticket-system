@@ -15,7 +15,7 @@ export default async function LoginPage({ searchParams, params }) {
   const isPasswordRecovery = passwordRecovery === 'yes';
 
   const supabaseAdmin = getSupabaseAdminClient();
-  const { data, error } = await supabaseAdmin.from('tenants').select('*').eq('id', params.tenant).single();
+  const { data, error } = await supabaseAdmin.from('tenants').select('*').eq('id', tenant).single();
 
   if (error) {
     notFound();
