@@ -17,7 +17,7 @@ export default function Nav({ tenant }) {
     useEffect(() => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_OUT') {
-                router.push(urlPath(`/${tenant}`));
+                router.push(urlPath(`/`, tenant));
             }
         });
 
