@@ -1,5 +1,6 @@
 import { TicketList } from './TicketList';
 
+
 const dummyTickets = [
     {
         id: 1,
@@ -21,9 +22,9 @@ const dummyTickets = [
     },
 ];
 
-export default function TicketListPage() {
+export default async function TicketListPage({ params }) {
     return <>
         <h2>Ticket List</h2>
-        <TicketList tickets={dummyTickets} />
+        <TicketList tickets={dummyTickets} tenant={params.tenant} />
     </>
 }
