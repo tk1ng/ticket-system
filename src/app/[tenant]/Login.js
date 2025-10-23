@@ -24,7 +24,12 @@ export const Login = ({ formType = 'pw-login', tenantName, tenant }) => {
     useEffect(() => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_IN') {
-                router.push(urlPath('/tickets', tenant));
+                if(session.user.app_metadata.tenants?.includes(tenant)){
+                    router.push(urlPath('/tickets', tenant));
+                } else {
+                    supabase.auth.signOut();
+                    alert('Could not sign in, tenant does not match')
+                }
             }
         });
 

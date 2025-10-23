@@ -1,6 +1,5 @@
 import { TicketList } from './TicketList';
 
-
 const dummyTickets = [
     {
         id: 1,

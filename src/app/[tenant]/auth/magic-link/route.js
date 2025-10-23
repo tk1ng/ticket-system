@@ -4,8 +4,9 @@ import { getSupabaseAdminClient } from '@/supabase-utils/adminClient';
 import { buildUrl } from '@/utils/url-helpers';
 
 export async function POST(request, { params }) {
+    const { tenant } = await params;
     const formData = await request.formData();
-    const type = formData.get('type') === 'recovery' ? 'recovery' : 'magiclink';
+    const type = formData.get('type') === 'recovery' ? 'recovery' : 'magic-link';
     const email = formData.get('email');
 
     const supabaseAdmin = getSupabaseAdminClient();
@@ -19,12 +20,15 @@ export async function POST(request, { params }) {
         type
     });
 
-    if (error) {
-        return NextResponse.redirect(new URL(`/error?type=${type}`, request.url), { status: 302 });
+    const user = linkData.user;
+    
+    if (error || !user.app_metadata?.tenants.includes(tenant)) {
+        const errorUrl = buildUrl(`/error?type=${type}`, tenant, request)
+        return NextResponse.redirect(errorUrl, { status: 302 });
     }
 
     const { hashed_token } = linkData.properties;
-    const constructedLink = buildUrl(`/auth/verify?hashed_token=${hashed_token}&type=${type}`, params.tenant, request);
+    const constructedLink = buildUrl(`/auth/verify?hashed_token=${hashed_token}&type=${type}`, tenant, request);
 
     const transporter = nodemailer.createTransport({
         host: "localhost",
@@ -44,6 +48,6 @@ export async function POST(request, { params }) {
         `,
     });
 
-    const thanksUrl = buildUrl(`/magic-thanks?type=${type}`, params.tenant, request);
+    const thanksUrl = buildUrl(`/magic-thanks?type=${type}`, tenant, request);
     return NextResponse.redirect(thanksUrl, { status: 302 });
 }
