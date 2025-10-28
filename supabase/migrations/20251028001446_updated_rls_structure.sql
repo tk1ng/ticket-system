@@ -209,11 +209,7 @@ on "public"."tenants"
 as permissive
 for select
 to authenticated
-using ((EXISTS ( SELECT
-   FROM tenant_permissions tp
-  WHERE ((tp.tenant = tenants.id) AND (EXISTS ( SELECT
-           FROM service_users su
-          WHERE ((su.id = tp.service_user) AND (su.supabase_user = auth.uid()))))))));
+using (COALESCE((((auth.jwt() -> 'app_metadata'::text) -> 'tenants'::text) ? id), false));
 
 
 
