@@ -1,5 +1,7 @@
-import { getSupabaseReqResClient } from './supabase-utils/reqResClient';
 import { NextResponse } from 'next/server';
+import { getSupabaseReqResClient } from './supabase-utils/reqResClient';
+import { TENANT_MAP } from './tenant-map';
+
 
 export const config = {
     matcher: [
