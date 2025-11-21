@@ -16,5 +16,5 @@ export function buildUrl(applicationPath, tenant, request) {
     const { protocol } = request.nextUrl;
     const tenantUrl = `${protocol}//${hostname}:${portSuffix}`;
 
-    return new URL(urlPath(applicationPath, tenant), request.url);
+    return new URL(urlPath(applicationPath, tenant), tenantUrl);
 }
