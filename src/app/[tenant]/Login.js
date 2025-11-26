@@ -118,6 +118,7 @@ export const Login = ({ formType = 'pw-login', tenantName, tenant }) => {
                                 pathname: urlPath('/', tenant),
                                 query: { magicLink: 'yes' }
                             }}
+                            style={{ width: '100%'}}
                         >
                             Go to Magic Link Login
                         </Link>
@@ -133,11 +134,23 @@ export const Login = ({ formType = 'pw-login', tenantName, tenant }) => {
                             style={{
                                 textAlign: 'center',
                                 display: 'block',
+                                marginTop: '1em'
                             }}
                         >
-                            Forgot password?
+                            Go to Password Recovery
                         </Link>
                     )}
+
+                    <Link
+                        href={urlPath('/register', tenant)}
+                        style={{
+                            textAlign: 'center',
+                            display: 'block',
+                            marginTop: '1em',
+                        }}
+                    >
+                        Create Account
+                    </Link>
                 </p>
             </article>
         </form>

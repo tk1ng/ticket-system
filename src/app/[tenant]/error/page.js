@@ -3,7 +3,7 @@ import { urlPath } from '@/utils/url-helpers';
 
 export default async function ErrorPage({ searchParams, params }) {
     const { type } = await searchParams;
-    const knownErrors = ['login-failed', 'magic-link', 'invalid-magic-link'];
+    const knownErrors = ['login-failed', 'magic-link', 'invalid-magic-link', 'register_mail_mismatch'];
 
     return (
         <div style={{ textAlign: 'center' }}>
@@ -19,6 +19,11 @@ export default async function ErrorPage({ searchParams, params }) {
             {type === 'invalid-magic-link' &&
                 <strong>
                     The magic link was expired or invalid. Please request a new one.
+                </strong>
+            }
+            {type === 'register_mail_mismatch' &&
+                <strong>
+                    You are not legitimated to register an account with <u>{searchParams.email}</u>.
                 </strong>
             }
             {!knownErrors.includes(type) && (
