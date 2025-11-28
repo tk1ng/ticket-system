@@ -1,53 +1,21 @@
-import nodemailer from 'nodemailer';
 import { NextResponse } from 'next/server';
-import { getSupabaseAdminClient } from '@/supabase-utils/adminClient';
 import { buildUrl } from '@/utils/url-helpers';
+import { sendOTPLink } from '@/utils/sendOTPLink';
 
 export async function POST(request, { params }) {
     const { tenant } = await params;
     const formData = await request.formData();
-    const type = formData.get('type') === 'recovery' ? 'recovery' : 'magic-link';
+    const type = formData.get('type') === 'recovery' ? 'recovery' : 'magiclink';
     const email = formData.get('email');
 
-    const supabaseAdmin = getSupabaseAdminClient();
-
-    // const { error } = await supabaseAdmin.auth.signInWithOtp({
-    //     email,
-    //     options: { shouldCreateUser: false }
-    // });
-    const { data: linkData, error } = await supabaseAdmin.auth.admin.generateLink({
-        email,
-        type
-    });
-
-    const user = linkData.user;
-    
-    if (error || !user.app_metadata?.tenants.includes(tenant)) {
-        const errorUrl = buildUrl(`/error?type=${type}`, tenant, request)
-        return NextResponse.redirect(errorUrl, { status: 302 });
-    }
-
-    const { hashed_token } = linkData.properties;
-    const constructedLink = buildUrl(`/auth/verify?hashed_token=${hashed_token}&type=${type}`, tenant, request);
-
-    const transporter = nodemailer.createTransport({
-        host: "localhost",
-        port: 54325,
-    });
-
-    const initialSentence = type === 'recovery' ? 'Hi there, you requested a password change.' : ' Hi there, this is a custom magic link email';
-    const sentenceEnding = type === 'recovery' ? 'change it' : 'log in';
-
-    await transporter.sendMail({
-        from: 'Ticket King auth@king.com',
-        to: email,
-        subject: 'Magic Link',
-        html: `
-        <h1>${initialSentence}</h1>
-        <p>Click <a href="${constructedLink.toString()}">here</a> to ${sentenceEnding}.</p>
-        `,
-    });
-
+    const errorUrl = buildUrl(`/error?type=${type}`, tenant, request);
     const thanksUrl = buildUrl(`/magic-thanks?type=${type}`, tenant, request);
-    return NextResponse.redirect(thanksUrl, { status: 302 });
+
+    const otpSuccess = await sendOTPLink(email, type, tenant, request);
+
+    if (!otpSuccess) {
+        return NextResponse.redirect(errorUrl, 302);
+    } else {
+        return NextResponse.redirect(thanksUrl, { status: 302 });
+    }
 }

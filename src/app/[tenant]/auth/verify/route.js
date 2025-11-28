@@ -3,14 +3,16 @@ import { getSupabaseCookiesUtilClient } from '@/supabase-utils/cookiesUtilClient
 import { buildUrl } from '@/utils/url-helpers';
 
 export async function GET(request, { params }) {
+    const supabase = await getSupabaseCookiesUtilClient();
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type');
     const hashed_token = searchParams.get('hashed_token');
     const isRecovery = type === 'recovery';
-    const supabase = await getSupabaseCookiesUtilClient();
+    const isSignUp = type === 'signup';
+
     let verificationType = 'magiclink';
     if (isRecovery) verificationType = 'recovery';
-    console.log('type', verificationType);
+    if (isSignUp) verificationType = 'signup';
 
     const { error } = await supabase.auth.verifyOtp({
         token_hash: hashed_token,
