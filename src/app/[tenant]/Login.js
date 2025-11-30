@@ -24,7 +24,7 @@ export const Login = ({ formType = 'pw-login', tenantName, tenant }) => {
     useEffect(() => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_IN') {
-                if(session.user.app_metadata.tenants?.includes(tenant)){
+                if (session.user.app_metadata.tenants?.includes(tenant)) {
                     router.push(urlPath('/tickets', tenant));
                 } else {
                     supabase.auth.signOut();
@@ -95,6 +95,20 @@ export const Login = ({ formType = 'pw-login', tenantName, tenant }) => {
                     {isPasswordRecovery && 'Request new Password'}
                     {isMagicLinkLogin && 'Sign in with Magic Link'}
                 </button>
+                <button type='button' onClick={() => {
+                    supabase.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: {
+                            redirectTo: window.location.origin + '/auth/verify-oauth',
+                            queryParams: {
+                                access_type: 'offline',
+                                prompt: 'consent',
+                            },
+                        },
+                    })
+                }}>
+                    Sign in with Google
+                </button>
 
                 <p>
                     {!isPasswordLogin && (
@@ -118,7 +132,7 @@ export const Login = ({ formType = 'pw-login', tenantName, tenant }) => {
                                 pathname: urlPath('/', tenant),
                                 query: { magicLink: 'yes' }
                             }}
-                            style={{ width: '100%'}}
+                            style={{ width: '100%' }}
                         >
                             Go to Magic Link Login
                         </Link>
