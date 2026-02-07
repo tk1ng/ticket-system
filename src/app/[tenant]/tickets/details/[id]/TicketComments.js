@@ -22,15 +22,6 @@ export function TicketComments() {
     return (
         <footer>
             <h3>Comments</h3>
-            <form
-                onSubmit={(event) => {
-                    event.preventDefault();
-                    alert("TODO: Add commnet");
-                }}
-            >
-                <textarea ref={commentRef} placeholder='Add a comment' />
-                <button type='submit'>Add comment</button>
-            </form>
             <section>
                 {comments.map((comment) => (
                     <article key={comment.date} className={classes.comment}>
@@ -40,6 +31,15 @@ export function TicketComments() {
                     </article>
                 ))}
             </section>
+            <form
+                onSubmit={(event) => {
+                    event.preventDefault();
+                    alert("TODO: Add commnet");
+                }}
+            >
+                <textarea ref={commentRef} placeholder='Add a comment' />
+                <button type='submit'>Add comment</button>
+            </form>
         </footer>
     );
 }
