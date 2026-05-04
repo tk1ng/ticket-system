@@ -5,7 +5,7 @@ import { buildUrl } from '@/utils/url-helpers';
 export async function GET(request, { params }) {
     const supabase = await getSupabaseCookiesUtilClient();
     const { searchParams } = new URL(request.url);
-    const { tenant } = await React.params;
+    const { tenant } = await params;
     const type = searchParams.get('type');
     const hashed_token = searchParams.get('hashed_token');
     const isRecovery = type === 'recovery';
