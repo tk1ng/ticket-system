@@ -5,10 +5,8 @@ import { TICKET_STATUS } from '@/utils/constants';
 
 export async function TicketList({ tenant }) {
     const supabase = await getSupabaseCookiesUtilClient();
-    console.log(supabase);
     const { data: tickets, error } = await supabase.from('tickets').select().eq('tenant', tenant);
-    console.log('tickets', tickets);
-    console.log('error', error);
+
     return (
         <table>
             <thead>
