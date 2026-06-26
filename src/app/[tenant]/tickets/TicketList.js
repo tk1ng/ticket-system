@@ -2,21 +2,28 @@ import Link from 'next/link'
 import { urlPath } from '@/utils/url-helpers'
 import { getSupabaseCookiesUtilClient } from '@/supabase-utils/cookiesUtilClient'
 import { TICKET_STATUS } from '@/utils/constants';
-import { ClientPageRoot } from 'next/dist/client/components/client-page';
-import { SearchParamsContext } from 'next/dist/shared/lib/hooks-client-context.shared-runtime';
 
 export async function TicketList({ tenant, searchParams }) {
     const supabase = await getSupabaseCookiesUtilClient();
-    const { data: tickets, error } = await supabase.from('tickets').select().eq('tenant', tenant).limit(3);
-    const { count } = await supabase.from('tickets').select("*", { count: "exact", head: true }).eq('tenant', tenant);
-    const moreRows = count - tickets.length > 0;
+    const { page: pgParam } = await searchParams;
 
     let page = 1;
     if (
-        Number.isInteger(Number(searchParams.page)) && Number(searchParams.page) > 0
+        Number.isInteger(Number(pgParam)) && Number(pgParam) > 0
     ) {
-        page = Number(searchParams.page);
+        page = Number(pgParam);
     }
+
+    const startingPoint = (page - 1) * 6;
+
+    const { data: tickets, error } = await supabase.from('tickets').select().eq('tenant', tenant).range(startingPoint, startingPoint + 5);
+    const { count } = await supabase.from('tickets')
+        .select("*", { count: "exact", head: true })
+        .eq('tenant', tenant)
+        .order("status", { ascending: true })
+        .order("created_at", { ascending: false });
+
+    const moreRows = count - page * 6 > 0;
 
     return (
         <>
